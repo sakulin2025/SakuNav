@@ -1,0 +1,101 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>链接管理</h1>
+
+<div class="card">
+  <h2>{{ '编辑链接' if editing else '新建链接' }}</h2>
+  <form method="post" action="{{ '/admin/links/' ~ editing.id if editing else '/admin/links' }}" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="field">
+      <span>标题 *</span>
+      <input type="text" name="title" required maxlength="128"
+             value="{{ editing.title if editing else '' }}" placeholder="例如：豆包">
+    </label>
+    <label class="field">
+      <span>链接地址 *</span>
+      <input type="text" name="url" required maxlength="2048"
+             value="{{ editing.url if editing else '' }}" placeholder="https://…（自动补全 https://）">
+    </label>
+    <label class="field">
+      <span>分类 *</span>
+      <select name="category_id" required>
+        {% for c in categories %}
+        <option value="{{ c.id }}" {% if (editing and editing.category_id == c.id) or (not editing and current_category == c.id) %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>描述</span>
+      <input type="text" name="description" maxlength="255"
+             value="{{ editing.description if editing else '' }}" placeholder="一句话描述（可选）">
+    </label>
+    <label class="field">
+      <span>自定义图标 URL</span>
+      <input type="text" name="icon" maxlength="2048"
+             value="{{ editing.icon if editing else '' }}" placeholder="留空则使用首字母色块">
+    </label>
+    <label class="field">
+      <span>图标底色</span>
+      <input type="color" name="color" value="{{ editing.color if editing else '#4f46e5' }}">
+    </label>
+    <label class="field">
+      <span>打开方式</span>
+      <select name="target">
+        <option value="_blank" {% if not editing or editing.target == '_blank' %}selected{% endif %}>新标签页</option>
+        <option value="_self" {% if editing and editing.target == '_self' %}selected{% endif %}>当前页</option>
+      </select>
+    </label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{{ '保存修改' if editing else '添加链接' }}</button>
+      {% if editing %}<a class="btn btn-ghost" href="/admin/links">取消编辑</a>{% endif %}
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>全部链接</h2>
+    <div class="chip-group">
+      <a class="chip {{ 'chip-active' if not current_category }}" href="/admin/links">全部</a>
+      {% for c in categories %}
+      <a class="chip {{ 'chip-active' if current_category == c.id }}" href="/admin/links?category={{ c.id }}">{{ c.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% if links %}
+  <table class="data-table">
+    <thead>
+      <tr><th>标题</th><th>URL</th><th>分类</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+      <tr>
+        <td class="cell-title">{{ link.title }}</td>
+        <td class="cell-url"><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.url }}</a></td>
+        <td>{{ link.category_name if link.category_name else '—' }}</td>
+        <td class="cell-actions">
+          <a class="btn btn-ghost btn-sm" href="/admin/links?edit={{ link.id }}">编辑</a>
+          <form method="post" action="/admin/links/{{ link.id }}/move" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="direction" value="up">
+            <button class="btn btn-ghost btn-sm" type="submit">↑</button>
+          </form>
+          <form method="post" action="/admin/links/{{ link.id }}/move" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="direction" value="down">
+            <button class="btn btn-ghost btn-sm" type="submit">↓</button>
+          </form>
+          <form method="post" action="/admin/links/{{ link.id }}/delete" class="inline-form" data-confirm="确定删除链接「{{ link.title }}」？">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="btn btn-danger btn-sm" type="submit">删除</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">当前筛选下没有链接。</p>
+  {% endif %}
+</div>
+{% endblock %}

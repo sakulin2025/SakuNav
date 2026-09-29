@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>概览</h1>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.links }}</div>
+    <div class="stat-label">书签链接</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.categories }}</div>
+    <div class="stat-label">分类</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.theme }}</div>
+    <div class="stat-label">当前主题</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">{{ stats.plugins }}</div>
+    <div class="stat-label">已启用插件</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>最近添加的链接</h2>
+    <a class="btn btn-ghost" href="/admin/links">管理全部 →</a>
+  </div>
+  {% if recent %}
+  <table class="data-table">
+    <thead>
+      <tr><th>标题</th><th>URL</th><th>分类</th><th>添加时间</th></tr>
+    </thead>
+    <tbody>
+      {% for link in recent %}
+      <tr>
+        <td>{{ link.title }}</td>
+        <td class="cell-url">{{ link.url }}</td>
+        <td>{{ link.category_name or '—' }}</td>
+        <td class="cell-muted">{{ link.created_at[:10] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">还没有链接。前往 <a href="/admin/links">链接管理</a> 添加第一个书签吧。</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>快速操作</h2>
+  <div class="quick-actions">
+    <a class="btn" href="/admin/links">添加链接</a>
+    <a class="btn" href="/admin/categories">添加分类</a>
+    <a class="btn" href="/admin/themes">更换主题</a>
+    <a class="btn" href="/admin/settings">站点设置</a>
+  </div>
+</div>
+{% endblock %}

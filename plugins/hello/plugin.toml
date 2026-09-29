@@ -1,0 +1,7 @@
+# SakuNav 插件清单（plugin.toml）
+
+name = "hello"
+version = "1.0.0"
+description = "示例插件：在导航页页脚注入问候语，并演示管理端路由与侧边栏扩展"
+author = "SakuNav Team"
+entry = "main.py"

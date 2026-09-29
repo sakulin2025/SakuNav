@@ -1,0 +1,84 @@
+{% extends "theme_base.html" %}
+{% block title %}{{ site.title }}{% endblock %}
+
+{% block body %}
+<header class="site-header">
+  <div class="container header-row">
+    <a class="brand" href="/">
+      {% if site.logo %}
+      <img class="brand-logo" src="{{ site.logo }}" alt="">
+      {% else %}
+      <span class="brand-mark">✦</span>
+      {% endif %}
+      <span class="brand-name">{{ site.title }}</span>
+    </a>
+    <div class="header-actions">
+      {% if search_enabled %}
+      <div class="nav-search">
+        <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm7 7l-3.5-3.5m3.5 11l-4-4"/>
+        </svg>
+        <input id="nav-search-input" type="search" placeholder="搜索书签…" autocomplete="off" aria-label="搜索书签">
+      </div>
+      {% endif %}
+      {% if user %}<a class="admin-link" href="/admin">管理</a>{% endif %}
+    </div>
+  </div>
+  {% if site.description %}
+  <div class="container"><p class="site-description">{{ site.description }}</p></div>
+  {% endif %}
+</header>
+
+<main class="container page">
+  {% for cat in categories %}
+  <section class="category" id="cat-{{ cat.id }}">
+    <h2 class="category-title">
+      {% if cat.icon %}<span class="category-icon">{{ cat.icon }}</span>{% endif %}
+      <span class="category-name">{{ cat.name }}</span>
+      <span class="category-count">{{ cat.links|length }}</span>
+    </h2>
+    {% if cat.links %}
+    <div class="link-grid">
+      {% for link in cat.links %}
+      <a class="link-card"
+         href="{{ link.url }}"
+         target="{{ link.target }}"
+         rel="noopener noreferrer"
+         data-search="{{ (link.title ~ ' ' ~ link.url ~ ' ' ~ link.description)|lower }}">
+        {% if icon_for(link).type == 'image' %}
+        <img class="link-icon" src="{{ icon_for(link).url }}" alt="" loading="lazy">
+        {% else %}
+        <span class="link-icon link-icon-letter" style="--accent: {{ icon_for(link).color }}">{{ icon_for(link).letter }}</span>
+        {% endif %}
+        <span class="link-body">
+          <span class="link-title">{{ link.title }}</span>
+          {% if link.description %}<span class="link-desc">{{ link.description }}</span>{% endif %}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="category-empty">该分类暂无链接</p>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  {% if not categories %}
+  <div class="empty-state">
+    <p class="empty-title">这里还空空如也</p>
+    <p>去 <a href="/admin/links">管理面板</a> 添加你的第一个书签吧。</p>
+  </div>
+  {% else %}
+  <div class="empty-state" id="no-result" hidden>
+    <p>没有匹配的书签，换个关键词试试。</p>
+  </div>
+  {% endif %}
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-row">
+    <span>{{ site.footer }}</span>
+    <span class="footer-meta">Powered by <a href="/">SakuNav</a> v{{ version }}</span>
+  </div>
+</footer>
+{% endblock %}

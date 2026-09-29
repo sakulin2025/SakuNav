@@ -1,0 +1,24 @@
+# SakuNav 单容器部署示例
+# 用法：docker compose up -d --build   （默认映射宿主机 8080 端口）
+services:
+  sakunav:
+    build: .
+    image: sakunav:latest
+    container_name: sakunav
+    ports:
+      - "8080:8000"
+    environment:
+      # 首次启动用以下两个变量创建管理员账号；
+      # 账号创建后，修改密码请到「管理面板 → 设置」，此处变量不再生效。
+      SAKUNAV_ADMIN_USERNAME: admin
+      SAKUNAV_ADMIN_PASSWORD: "请改成强密码"
+      # 会话签名密钥。生产环境建议显式设置，可用以下命令生成：
+      #   docker run --rm sakunav python -m sakunav.cli generate-secret
+      # 留空时首次启动自动生成并保存在数据卷中（跨重启保持）。
+      SAKUNAV_SECRET_KEY: ""
+      # 经 HTTPS 反向代理对外时设为 "true"，会话 Cookie 将仅通过 HTTPS 传输
+      SAKUNAV_HTTPS_ONLY: "false"
+    volumes:
+      # 数据（数据库 + 上传的主题/插件）持久化到宿主机 ./data
+      - ./data:/app/data
+    restart: unless-stopped

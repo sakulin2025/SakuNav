@@ -1,0 +1,7 @@
+# SakuNav 主题清单（theme.toml）
+
+name = "dark"
+version = "1.0.0"
+description = "深色主题：低亮度护眼配色，适合夜间使用"
+author = "SakuNav Team"
+color_scheme = "dark"

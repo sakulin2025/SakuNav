@@ -1,0 +1,64 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>分类管理</h1>
+
+<div class="card">
+  <h2>{{ '编辑分类' if editing else '新建分类' }}</h2>
+  <form method="post" action="{{ '/admin/categories/' ~ editing.id if editing else '/admin/categories' }}" class="form-grid form-grid-narrow">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="field">
+      <span>分类名称 *</span>
+      <input type="text" name="name" required maxlength="64"
+             value="{{ editing.name if editing else '' }}" placeholder="例如：常用工具">
+    </label>
+    <label class="field">
+      <span>图标（emoji 或字符）</span>
+      <input type="text" name="icon" maxlength="16"
+             value="{{ editing.icon if editing else '' }}" placeholder="例如：🧰（可选）">
+    </label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{{ '保存修改' if editing else '添加分类' }}</button>
+      {% if editing %}<a class="btn btn-ghost" href="/admin/categories">取消编辑</a>{% endif %}
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>全部分类</h2>
+  {% if categories %}
+  <table class="data-table">
+    <thead>
+      <tr><th>图标</th><th>名称</th><th>链接数</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for c in categories %}
+      <tr>
+        <td>{{ c.icon or '—' }}</td>
+        <td class="cell-title">{{ c.name }}</td>
+        <td>{{ c.link_count }}</td>
+        <td class="cell-actions">
+          <a class="btn btn-ghost btn-sm" href="/admin/categories?edit={{ c.id }}">编辑</a>
+          <form method="post" action="/admin/categories/{{ c.id }}/move" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="direction" value="up">
+            <button class="btn btn-ghost btn-sm" type="submit">↑</button>
+          </form>
+          <form method="post" action="/admin/categories/{{ c.id }}/move" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="direction" value="down">
+            <button class="btn btn-ghost btn-sm" type="submit">↓</button>
+          </form>
+          <form method="post" action="/admin/categories/{{ c.id }}/delete" class="inline-form" data-confirm="确定删除分类「{{ c.name }}」？其下 {{ c.link_count }} 条链接将一并删除。">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="btn btn-danger btn-sm" type="submit">删除</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-hint">还没有分类，先在上方创建一个。</p>
+  {% endif %}
+</div>
+{% endblock %}

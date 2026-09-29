@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>设置</h1>
+
+<div class="card">
+  <h2>站点设置</h2>
+  <form method="post" action="/admin/settings" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="field">
+      <span>站点名称 *</span>
+      <input type="text" name="title" required maxlength="64" value="{{ site.title }}">
+    </label>
+    <label class="field">
+      <span>站点描述</span>
+      <input type="text" name="description" maxlength="255" value="{{ site.description }}">
+    </label>
+    <label class="field">
+      <span>Logo URL</span>
+      <input type="text" name="logo" maxlength="2048" value="{{ site.logo }}" placeholder="留空使用默认图标">
+    </label>
+    <label class="field">
+      <span>页脚文字</span>
+      <input type="text" name="footer" maxlength="255" value="{{ site.footer }}">
+    </label>
+    <label class="field">
+      <span>链接默认打开方式</span>
+      <select name="target_default">
+        <option value="_blank" {% if site.target_default == '_blank' %}selected{% endif %}>新标签页</option>
+        <option value="_self" {% if site.target_default == '_self' %}selected{% endif %}>当前页</option>
+      </select>
+    </label>
+    <div class="field-checkbox">
+      <label><input type="checkbox" name="public_access" value="1" {% if site.public_access %}checked{% endif %}> 允许公开访问导航页（关闭后需登录才能浏览）</label>
+      <label><input type="checkbox" name="search_enabled" value="1" {% if settings.get('search.enabled', true) %}checked{% endif %}> 在导航页显示搜索框</label>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">保存设置</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>修改管理员密码</h2>
+  <form method="post" action="/admin/password" class="form-grid form-grid-narrow">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="field">
+      <span>当前密码</span>
+      <input type="password" name="current" required autocomplete="current-password">
+    </label>
+    <label class="field">
+      <span>新密码（至少 8 位）</span>
+      <input type="password" name="new" required minlength="8" autocomplete="new-password">
+    </label>
+    <label class="field">
+      <span>确认新密码</span>
+      <input type="password" name="confirm" required minlength="8" autocomplete="new-password">
+    </label>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">修改密码</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

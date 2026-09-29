@@ -1,0 +1,7 @@
+# SakuNav 插件清单（plugin.toml）
+
+name = "links-counter"
+version = "1.0.0"
+description = "示例插件：维护链接总数统计，并在导航页显示，演示数据类钩子"
+author = "SakuNav Team"
+entry = "main.py"

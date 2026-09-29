@@ -1,0 +1,8 @@
+# SakuNav 主题清单（theme.toml）
+# 字段：name / version / description / author / color_scheme(light|dark)
+
+name = "default"
+version = "1.0.0"
+description = "SakuNav 默认主题：明亮、简洁、卡片式布局，适合大多数场景"
+author = "SakuNav Team"
+color_scheme = "light"

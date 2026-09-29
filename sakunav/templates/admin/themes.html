@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>主题管理</h1>
+<p class="page-hint">主题以「目录包」为单位：<code>theme.toml</code> + <code>templates/index.html</code> + <code>static/</code>。
+开发文档见 <code>docs/theme-development.md</code>。用户主题上传后保存在数据卷中，重建容器不丢失。</p>
+
+<div class="theme-grid">
+  {% for t in themes %}
+  <div class="theme-card {{ 'theme-card-active' if t.name == active_theme }}">
+    <div class="theme-swatch theme-swatch-{{ t.color_scheme }}">
+      <span class="theme-swatch-name">{{ t.name }}</span>
+    </div>
+    <div class="theme-card-body">
+      <h3>{{ t.name }}
+        {% if t.name == active_theme %}<span class="badge badge-active">使用中</span>{% endif %}
+        {% if t.builtin %}<span class="badge">内置</span>{% else %}<span class="badge badge-user">用户</span>{% endif %}
+      </h3>
+      <p>{{ t.description or '（无描述）' }}</p>
+      <p class="meta">v{{ t.version }} · {{ t.author or '未知作者' }} · {{ '浅色' if t.color_scheme == 'light' else '深色' }}</p>
+      <form method="post" action="/admin/themes/activate" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="name" value="{{ t.name }}">
+        <button class="btn btn-sm" type="submit" {% if t.name == active_theme %}disabled{% endif %}>
+          {{ '当前主题' if t.name == active_theme else '启用此主题' }}
+        </button>
+      </form>
+      {% if not t.builtin and t.name != active_theme %}
+      <form method="post" action="/admin/themes/{{ t.name }}/delete" class="inline-form" data-confirm="确定删除主题「{{ t.name }}」？">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn btn-danger btn-sm" type="submit">删除</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>上传主题包</h2>
+  <form method="post" action="/admin/themes/upload" enctype="multipart/form-data" class="form-inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="file" name="file" accept=".zip" required>
+    <button class="btn btn-primary" type="submit">上传并安装</button>
+  </form>
+  <p class="hint">zip 内应包含一个顶层目录（目录名即主题名），内含 <code>theme.toml</code>、<code>templates/index.html</code> 与 <code>static/</code>。</p>
+</div>
+{% endblock %}

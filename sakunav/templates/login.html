@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · {{ site.title }}</title>
+<link rel="icon" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/admin.css">
+</head>
+<body class="login-body">
+<main class="login-card">
+  <div class="login-brand">{{ site.title }}</div>
+  <p class="login-sub">管理面板登录</p>
+  {% if error %}<div class="flash flash-error">{{ error }}</div>{% endif %}
+  <form method="post" action="/login">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label class="field">
+      <span>用户名</span>
+      <input type="text" name="username" required autofocus autocomplete="username">
+    </label>
+    <label class="field">
+      <span>密码</span>
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button class="btn btn-primary btn-block" type="submit">登录</button>
+  </form>
+  <p class="login-foot"><a href="/">← 返回导航页</a></p>
+</main>
+</body>
+</html>

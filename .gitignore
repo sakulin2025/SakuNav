@@ -1,0 +1,13 @@
+# 运行时数据（SQLite 数据库、上传的主题/插件、自动生成的会话密钥）
+data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# 系统与交付物
+.DS_Store
+*.zip

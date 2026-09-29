@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block content %}
+<h1>插件管理</h1>
+<p class="page-hint">插件以「目录」为单位：<code>plugin.toml</code> + 入口 <code>main.py</code>，通过钩子（hook）扩展系统行为。
+开发文档见 <code>docs/plugin-development.md</code>。用户插件放在数据卷的 <code>plugins/</code> 目录下，重启不丢失。
+<span class="warn">注意：插件以管理员权限运行，请只安装可信来源的插件。</span></p>
+
+<div class="plugin-grid">
+  {% for p in plugins %}
+  <div class="plugin-card">
+    <div class="plugin-card-head">
+      <h3>{{ p.name }}
+        {% if p.enabled %}<span class="badge badge-active">已启用</span>{% else %}<span class="badge">已停用</span>{% endif %}
+        {% if p.builtin %}<span class="badge">内置</span>{% else %}<span class="badge badge-user">用户</span>{% endif %}
+      </h3>
+      <span class="meta">v{{ p.version }}</span>
+    </div>
+    <p>{{ p.description or '（无描述）' }}</p>
+    <p class="meta">作者：{{ p.author or '未知' }} · 入口：{{ p.entry }}</p>
+    <form method="post" action="/admin/plugins/{{ p.name }}/toggle" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="enabled" value="{{ '0' if p.enabled else '1' }}">
+      <button class="btn btn-sm {{ 'btn-ghost' if p.enabled else 'btn-primary' }}" type="submit">
+        {{ '停用插件' if p.enabled else '启用插件' }}
+      </button>
+    </form>
+  </div>
+  {% endfor %}
+  {% if not plugins %}
+  <p class="empty-hint">未发现任何插件。</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>安装用户插件</h2>
+  <p class="hint">将插件目录（含 <code>plugin.toml</code> 与 <code>main.py</code>）放到数据卷的
+  <code>&lt;数据目录&gt;/plugins/&lt;插件名&gt;/</code> 下，然后在 Docker 内执行
+  <code>docker restart sakunav</code>，或直接在数据目录重启服务后，本页即可看到并启用。</p>
+</div>
+{% endblock %}
